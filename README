@@ -1,0 +1,37 @@
+This is a Python project for forecasting data using Singular Spectrum Analize.
+Main parts of the project:
+- data source is csv files in the 'data0803' folder;
+- code and modules in 'py' folder;
+- configurations in the 'py/configs' folder.
+
+Configuration defines data source used for calculation.
+For debugging the algorithm and parameters you can use
+several data sources - linear, sin, random.
+Graphics is produced by matplotlib which is embedded in PyQt
+and you can use the same navigation, zoom and other matplotlib features
+
+
+Requirements: 
+- PyQt for user interface,
+- Matplotlib for graphics,
+- scipy for math calculations.
+
+How to use:
+./py.ssa
+Select configuration from 'configs' folder.
+press 'Calc'.
+
+You will see calculated coefficients for SSA.
+Checkbox show checked coefficients which are optimal from
+program point of view. You can change selection and recalculate.
+Data graph show original and forecasted data. Use matplotlib
+navigation for explore differences.
+
+
+
+Literature:
+[1] Golyandina, N., Nekrutkin, V., and Zhigljavsky, A. (2001). Analysis of Time Series Structure: SSA and related tech-
+niques, Chapman & Hall/CRC, New York - London.
+[2] Hossein Hassani. A Brief Introduction to Singular Spectrum Analysis
+
+
