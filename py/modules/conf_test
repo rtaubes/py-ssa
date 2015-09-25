@@ -1,0 +1,24 @@
+[source.common]
+data_size : 18
+source : source.1
+predict: 8
+data_offset: 8
+[source.1]
+type: csv
+file: a.csv
+cols: high, low
+use: average
+[source.3]
+type: sin
+period: 22
+amp: 1.234
+phase: 45
+[ssa]
+data_range: 32
+window_size : 15
+iterations: 9
+noise_level: 0.12
+grouping:
+[show]
+title: test title
+

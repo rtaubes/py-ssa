@@ -1,0 +1,72 @@
+
+# size of generated data. When size is 0, whole range
+# of produces by source is used. Size can be longer
+# than required for SSA algo. In this case, it possible
+# to use data rest for analize of prediction.
+[source.common]
+
+data_size: 40
+
+[source.1]
+
+type  : csv
+file  : ../data0803/d5.csv
+cols  : high, low
+offset: 23
+# what to use: high /low/ middle/ delta
+use   : middle
+#use   : delta
+
+[ssa]
+
+# data size used for SSA analyze. 'N' parameter for SSA
+# data_range : 58
+data_range : 22
+
+# data window size. 'L' parameter for SSA
+# window_size : 29
+window_size : 11
+
+# make SSA N iterations, select best grouping
+iterations: 1
+
+# Relative to max fourie amplitude value.
+# 0 - all include, 1 - all excluded.
+# indicated here is relative to it.
+# All components with max level below this level assumed to be a noise.
+noise_level: 0.
+#noise_level: 0.08
+
+# Use and show components in result. Applied between SSA and
+# diagonal averaging of grouped SSA components, before 'noise level'.
+# Parts numbers starts from zero. Available formats:
+# (N N), (N N), ...
+# or 'none' - use as is without grouping.
+# or 'auto' - calculate groups as is without grouping.
+grouping : none
+#grouping : (0), (1, 2), (3, 4), (5, 6,7)
+
+# include only required parts in result. Parts are grouped componenets
+# (see 'grouping' above).
+# Available values:
+# - comma separated list of numbers: '0, 1, 2' or
+# - 'all' - use all parts
+#result_parts: 0, 1, 2
+
+[show]
+
+title: d5.csv/s=22/w=11
+
+# show data source. Disabling it can help to analyse result without
+# trend. It will prevent initial showing of two horizontal lines
+# one below another.
+# Default: show. For disabling use 'false' or '0' or '-'
+show_source: true
+#show_source: false
+
+#show_parts: true
+show_parts: false
+
+#show_summ: false
+show_summ: true
+
