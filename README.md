@@ -17,6 +17,6 @@ How to use:
 - Click the 'Calc' button.
 - Select required number of SVD eigenvectors and click 'Calc' once more.
 
-The site with a description: [link](rtaubes.pythonanywhere.com)
+The site with a description: [link](http://rtaubes.pythonanywhere.com/ssa/)
 
 
