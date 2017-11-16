@@ -7,7 +7,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -16,31 +16,31 @@ except AttributeError:
         return s
 
 try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QtWidgets.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QtWidgets.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QtWidgets.QApplication.translate(context, text, disambig)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(353, 596)
-        self.gridLayout = QtGui.QGridLayout(Dialog)
+        self.gridLayout = QtWidgets.QGridLayout(Dialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.sSelectSb = QtGui.QSlider(Dialog)
+        self.sSelectSb = QtWidgets.QSlider(Dialog)
         self.sSelectSb.setOrientation(QtCore.Qt.Vertical)
         self.sSelectSb.setInvertedAppearance(True)
         self.sSelectSb.setInvertedControls(False)
         self.sSelectSb.setObjectName(_fromUtf8("sSelectSb"))
         self.horizontalLayout_2.addWidget(self.sSelectSb)
-        self.u_vecLw = QtGui.QListWidget(Dialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.u_vecLw = QtWidgets.QListWidget(Dialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.u_vecLw.sizePolicy().hasHeightForWidth())
@@ -49,13 +49,13 @@ class Ui_Dialog(object):
         self.u_vecLw.setMaximumSize(QtCore.QSize(116, 16777215))
         self.u_vecLw.setObjectName(_fromUtf8("u_vecLw"))
         self.horizontalLayout_2.addWidget(self.u_vecLw)
-        self.coeffLw = QtGui.QListWidget(Dialog)
+        self.coeffLw = QtWidgets.QListWidget(Dialog)
         self.coeffLw.setObjectName(_fromUtf8("coeffLw"))
         self.horizontalLayout_2.addWidget(self.coeffLw)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)

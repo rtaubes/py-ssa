@@ -11,13 +11,13 @@
     - create functions for describing grouped data;
 '''
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import pyqtSignal
+from PyQt5 import QtGui, QtCore
+from PyQt5.QtCore import pyqtSignal
 import logging
-from print_support import log_array, log_matrix
-import ssa_algo
-import utils
-import data_source
+from .print_support import log_array, log_matrix
+from . import ssa_algo
+from . import utils
+from . import data_source
 import numpy as np
 
 
@@ -75,7 +75,7 @@ class PSSA(QtCore.QThread):
     def run(self):
         ''' QThread main function '''
         self.log.info("start ssa thread with cmd [{}]".format(self.cmd))
-        if self.cmd not in self.commands.keys():
+        if self.cmd not in list(self.commands.keys()):
             e = "Unknown command [{}]".format(self.cmd)
             self.log.error(e)
             self.ssa_calc_finished.emit(0, 0, 0)
@@ -181,7 +181,7 @@ class PSSA(QtCore.QThread):
             return
         try:
             self.ssa.prepare_predict()
-        except ssa_algo.SSAError, e:
+        except ssa_algo.SSAError as e:
             raise PSSAError(e)
 
     def reset_predict(self):
@@ -228,26 +228,26 @@ class PSSA(QtCore.QThread):
             Return tuple (True/False, err string)
         '''
         invalid = []
-        for x in kargs.keys():
+        for x in list(kargs.keys()):
             if not x in avail:
                 invalid.append(x)
         if len(invalid):
             e = "{}: - invalid arg(s):{}".format(fname, invalid)
             self.log.error(e)
             raise PSSAError(e)
-        if 'N' in kargs.keys():
+        if 'N' in list(kargs.keys()):
             N = int(kargs['N'])
         else:
             N = self.get_config_N()
-        if 'L' in kargs.keys():
+        if 'L' in list(kargs.keys()):
             L = int(kargs['L'])
         else:
             L = self.get_config_L()
-        if 'offset' in kargs.keys():
+        if 'offset' in list(kargs.keys()):
             offset = int(kargs['offset'])
         else:
             offset = self.get_config_data_offset()
-        if 'send_fin_msg' in kargs.keys():
+        if 'send_fin_msg' in list(kargs.keys()):
             send_fin_msg = kargs['send_fin_msg']
         else:
             send_fin_msg = True
@@ -315,11 +315,11 @@ class PSSA(QtCore.QThread):
                 self.ssa_calc_finished.emit(offset, N, L)
             self.ssa_log_msg.emit("algo: ssa calc done")
 #            self.yieldCurrentThread()
-        except (ssa_algo.SSAErrorDataRange, PSSAError), err:
+        except (ssa_algo.SSAErrorDataRange, PSSAError) as err:
             self.log.error(err)
             self.ssa_log_error.emit(str(err))
             self.ssa_calc_finished.emit(0, 0, 0)
-        except Exception, e:
+        except Exception as e:
             self.log.error('Exception: {}'.format(e))
             self.ssa_log_error.emit('Exception: {}'.format(e))
             self.ssa_calc_finished.emit(0, 0, 0)
@@ -376,11 +376,11 @@ class PSSA(QtCore.QThread):
             self.prepare_predict()
             self.ssa_log_msg.emit("algo: w-opt ssa calc finished")
             self.ssa_calc_finished.emit(self.ssa.data_offset, self.ssa.N, self.ssa.L)
-        except (ssa_algo.SSAErrorDataRange, PSSAError), err:
+        except (ssa_algo.SSAErrorDataRange, PSSAError) as err:
             self.log.error(e)
             self.ssa_log_error.emit(e)
             self.ssa_calc_finished.emit(0, 0, 0)
-        except Exception, e:
+        except Exception as e:
             self.log.error('Exception: {}'.format(e))
             self.ssa_log_error.emit('Exception: {}'.format(e))
             self.ssa_calc_finished.emit(0, 0, 0)

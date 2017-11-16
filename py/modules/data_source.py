@@ -6,7 +6,7 @@ import numpy as np
 #import ConfigParser # errors
 import re
 import logging
-import config
+from . import config
 
 class DataSrcError(Exception):
     pass
@@ -81,7 +81,7 @@ class CsvSrc(IDataSrc):
             else:
                 # this is a column name
                 self._data = csv_data[self._cols[0]]
-        except config.ConfigError, e:
+        except config.ConfigError as e:
             err = "%s: %s" % (self._class_name, repr(e))
             self._log.error(err)
             raise DataSrcError(err)
@@ -101,7 +101,7 @@ class LinSrc(IDataSrc):
             self._log.debug("return previous data(_regenerate)")
             return self._y.copy()
         self._log.debug("recalculate")
-        x = np.array(range(self.data_size()))
+        x = np.array(list(range(self.data_size())))
         tan = np.tan(np.pi / 180.0 * self._angle)
         self._y = self._y0 + tan * x
         self._regenerate = False
@@ -117,7 +117,7 @@ class LinSrc(IDataSrc):
             self._y0 = self._src_cnf.y0
             self._angle = self._src_cnf.angle
             self._regenerate = True
-        except config.ConfigError, e:
+        except config.ConfigError as e:
             err = "%s: %s" % (self._class_name, repr(e))
             self._log.error(err)
             raise DataSrcError(err)
@@ -158,7 +158,7 @@ class SinSrc(IDataSrc):
             self._log.info("period:{:f}, amp:{:f}, phase:{:f}, data size: {:d}"
                     .format(self._period, self._amp, self._phase, self.data_size()))
             self._regenerate = True
-        except config.ConfigError, e:
+        except config.ConfigError as e:
             err = "%s: %s" % (self._class_name, repr(e))
             self._log.error(err)
             raise DataSrcError(err)
@@ -213,7 +213,7 @@ class DataSource(object):
         global sources
         stype = src_cnf.TYPE
         self._cnf = cnf
-        if not stype in sources.keys():
+        if not stype in list(sources.keys()):
             raise DataSrcError("Config error, unknown source '%s'"
                     % (stype))
         # append new object of concrete source
@@ -265,17 +265,17 @@ def create_data_source(cnf):
                 data_source.append_src(src_cnf, cnf)
                 log.info("append {}".format(src_cnf.sname))
         else:
-            print "create_data_sources: src_idx:", cnf.source_idx
+            print("create_data_sources: src_idx:", cnf.source_idx)
             src_cnf = cnf.sources[cnf.source_idx] # concrete config
             data_source.append_src(src_cnf, cnf)
             log.info("append {}".format(src_cnf.sname))
-    except config.ConfigError, e:
+    except config.ConfigError as e:
         raise DataSrcError("Config error: %s" % (repr(e)))
     return data_source
 
 if __name__ == '_main__':
-    import ConfigParser
-    cnf = ConfigParser.ConfigParser()
+    import configparser
+    cnf = configparser.ConfigParser()
     cnf.add_section('source.1')
     cnf.set('source.1', 'type', 'sin')
     cnf.set('source.1', 'period', 10.)

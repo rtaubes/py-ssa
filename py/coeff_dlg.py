@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 ''' Dialog for coefficients and 'U' eigenvectors '''
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import pyqtSignal
+from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.QtCore import pyqtSignal
 from ui_coeff_dlg import Ui_Dialog
 import numpy as np
 import logging
 
-class CoeffDlg(QtGui.QDialog):
+class CoeffDlg(QtWidgets.QDialog):
 
     need_recalc = pyqtSignal()
 
@@ -39,7 +39,7 @@ class CoeffDlg(QtGui.QDialog):
             return
         item_no = 0
         for i in range(len(S)):
-            item = QtGui.QListWidgetItem("[{0:02d}] {1:f}".format(i, S[i]))
+            item = QtWidgets.QListWidgetItem("[{0:02d}] {1:f}".format(i, S[i]))
             item.setFlags(QtCore.Qt.ItemIsSelectable |
                     QtCore.Qt.ItemIsEnabled |
                     QtCore.Qt.ItemIsUserCheckable)
@@ -58,7 +58,7 @@ class CoeffDlg(QtGui.QDialog):
             return
         for r in roots:
             s = "{:<22f} ({:f})".format(r, np.linalg.norm(r))
-            item = QtGui.QListWidgetItem(s)
+            item = QtWidgets.QListWidgetItem(s)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
             self.ui.coeffLw.addItem(item)
 

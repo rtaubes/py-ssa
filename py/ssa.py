@@ -4,30 +4,30 @@ import os.path
 import sys
 import argparse
 import logging
-sys.path.append(os.path.join(sys.path[0], "modules"))
-import pssa
+# sys.path.append(os.path.join(sys.path[0], "modules"))
+import modules.pssa as pssa
 import numpy as np
 import pylab as p
 from coeff_dlg import CoeffDlg
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import pyqtSignal  # ,QPoint
+from PyQt5 import QtWidgets, QtCore, QtWidgets
+from PyQt5.QtCore import pyqtSignal  # ,QPoint
 from ui_main_dlg import *
 import sys
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 
-from config import *
+from modules.config import *
 
 
 class PlotError(Exception):
     pass
 
 
-class PlotDlg(QtGui.QDialog):
+class PlotDlg(QtWidgets.QDialog):
     COLORS = {'black':'#000000', 'blue':'#0000ff', 'red':'#ff0000',
             'green':'#00ff00', 'gray':'#585858'}
 
@@ -44,10 +44,10 @@ class PlotDlg(QtGui.QDialog):
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.canvas.setSizePolicy(
-                                QtGui.QSizePolicy.Expanding,
-                                QtGui.QSizePolicy.Expanding)
+                                QtWidgets.QSizePolicy.Expanding,
+                                QtWidgets.QSizePolicy.Expanding)
         self.canvas.updateGeometry()
-        layout = QtGui.QVBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
         self.setLayout(layout)
@@ -55,10 +55,10 @@ class PlotDlg(QtGui.QDialog):
         self.finished.connect(self.about_to_close)
         self.axes = self.figure.add_subplot(111)
         self.axes.hold(False)
-        self.colors_lst = PlotDlg.COLORS.values()
+        self.colors_lst = list(PlotDlg.COLORS.values())
         if parent:
             self.fig_closing.connect(parent.fig_closing)
-        print "set PlotDlg to {}/{}".format(x, y)
+        print("set PlotDlg to {}/{}".format(x, y))
         if x != 0:
             self.move(x, y)
 
@@ -94,7 +94,7 @@ class XYPlotDlg(PlotDlg):
             3) legal html names: 'red',... are supported.
             See Line2D documentation.
         '''
-        if line_name in self.lines2d.keys():
+        if line_name in list(self.lines2d.keys()):
             return self.lines2d[line_name]
         line = Line2D(**kw_args)
         self.axes.add_line(line)
@@ -106,12 +106,12 @@ class XYPlotDlg(PlotDlg):
         return line
 
     def get_line2d(self, line_name):
-        if not line_name in self.lines2d.keys():
+        if not line_name in list(self.lines2d.keys()):
             self.log.error("could not find line2d by name {}".format(line_name))
             return None
         return self.lines2d[line_name]
 
-    def draw(self, **data):
+    def draw(self, *args, **data):
         ''' draw data set 'data'. Helper for add_line for line array.
             @param data - data array as line_name -> keywords parameter
                           for add_line().
@@ -121,7 +121,7 @@ class XYPlotDlg(PlotDlg):
         xmax = -1e10
         ymin = 1e10
         ymax = -1e10
-        for ln_name in data.keys():
+        for ln_name in list(data.keys()):
             if ln_name == '_x_limits_':
                 ymin = data[ln_name]['ymin']
                 ymax = data[ln_name]['ymax']
@@ -138,9 +138,9 @@ class XYPlotDlg(PlotDlg):
             self.axes.autoscale(enable=True, axis='y', tight=False)
             self.axes.set_xlim(xmin, xmax)
             self.axes.set_ylim(ymin, ymax)
-            print "ymin/ymax: {}/{}".format(ymin, ymax)
+            print("ymin/ymax: {}/{}".format(ymin, ymax))
 
-    def redraw(self, **data):
+    def redraw(self, *args, **data):
         ''' redraw lines. Only 'xdata' and 'ydata' in 'data' allowed.
             @param  data - array line_name->[x, y]
         '''
@@ -148,19 +148,19 @@ class XYPlotDlg(PlotDlg):
         ymax = -1e10
         xmin = 1e10
         xmax = -1e10
-        for ln_name in data.keys():
+        for ln_name in list(data.keys()):
             if ln_name == '_x_limits_':
                 ymin = data[ln_name]['ymin']
                 ymax = data[ln_name]['ymax']
                 xmin = data[ln_name]['xmin']
                 xmax = data[ln_name]['xmax']
                 continue
-            if not ln_name in self.lines2d.keys():
+            if not ln_name in list(self.lines2d.keys()):
                 continue
             ln_data = data[ln_name]
             x = None
             y = None
-            for key in ln_data.keys():
+            for key in list(ln_data.keys()):
                 if key == 'xdata':
                     x = ln_data['xdata']
                 elif key == 'ydata':
@@ -200,7 +200,7 @@ class WCorrelDlg(PlotDlg):
         color = 1.0 - color
         return "{:f}".format(color)
 
-    def draw(self, data_tbl):
+    def draw(self, data_tbl, **kwargs):
         ''' draw matrix as colorized table
             @param table - square matrix of values [0..1]
         '''
@@ -215,7 +215,7 @@ class WCorrelDlg(PlotDlg):
         self.log.debug("table colors:{}".format(colors))
         self.tbl = p.table(loc='center', cellColours=colors)
 
-    def redraw(self, data_tbl):
+    def redraw(self, data_tbl, **kwargs):
         ''' redraw matrix table
             @param table - square matrix of values [0..1]
         '''
@@ -230,7 +230,7 @@ class WCorrelDlg(PlotDlg):
         self.canvas.draw()
 
 
-class XYListPlotDlg(QtGui.QDialog):
+class XYListPlotDlg(QtWidgets.QDialog):
 
     fig_closing = pyqtSignal(int, int, int)
 
@@ -242,15 +242,15 @@ class XYListPlotDlg(QtGui.QDialog):
         self.setWindowTitle(title)
         self.setVisible(True)
         self.setModal(False)
-        self.qlayout = QtGui.QHBoxLayout(self)
+        self.qlayout = QtWidgets.QHBoxLayout(self)
         self.setLayout(self.qlayout)
-        self.qscroll = QtGui.QScrollArea(self)
+        self.qscroll = QtWidgets.QScrollArea(self)
         self.qscroll.setGeometry(QtCore.QRect(0, 0, 400, 600))
-        self.qscroll.setFrameStyle(QtGui.QFrame.NoFrame)
+        self.qscroll.setFrameStyle(QtWidgets.QFrame.NoFrame)
         self.qlayout.addWidget(self.qscroll)
 
-        self.qscrollContext = QtGui.QWidget()
-        self.qscrollLayout = QtGui.QVBoxLayout(self.qscrollContext)
+        self.qscrollContext = QtWidgets.QWidget()
+        self.qscrollLayout = QtWidgets.QVBoxLayout(self.qscrollContext)
         self.qscrollLayout.setGeometry(QtCore.QRect(0, 0, 1000, 1000))
 
         self.qscroll.setWidget(self.qscrollContext)
@@ -266,17 +266,17 @@ class XYListPlotDlg(QtGui.QDialog):
         self.fig_closing.emit(self.view_type, p.x(), p.y())
 
 
-    def draw(self, data):
+    def draw(self, data, **kwargs):
         figs = len(data)
         for i in range(figs):
-            fig_widget = QtGui.QWidget(self.qscrollContext)
+            fig_widget = QtWidgets.QWidget(self.qscrollContext)
             figure = Figure((4.0, 3.0), dpi=70)  # params: size(inches), dpi
             canvas = FigureCanvas(figure)
             canvas.setParent(fig_widget)
             axes = figure.add_subplot(111, title="[%d]" % (i))
             if self.view_type == MainDlg.FOURIE_VIEW:
                 line = data[i]
-                axes.vlines(range(len(line)), np.zeros(len(line)), line)
+                axes.vlines(list(range(len(line))), np.zeros(len(line)), line)
                 # shift left for showing zero values
                 x0, x1 = axes.get_xlim()
                 x0 = x0 - (x1-x0)/20
@@ -287,7 +287,7 @@ class XYListPlotDlg(QtGui.QDialog):
 
             canvas = FigureCanvas(figure)
             canvas.setParent(fig_widget)
-            layout = QtGui.QVBoxLayout()
+            layout = QtWidgets.QVBoxLayout()
             layout.addWidget(canvas)
             fig_widget.setLayout(layout)
             # prevent the canvas to shrink beyond a point
@@ -296,9 +296,9 @@ class XYListPlotDlg(QtGui.QDialog):
             self.qscrollLayout.addWidget(fig_widget)
         self.qscrollContext.setLayout(self.qscrollLayout)
 
-    def redraw(self, data):
-        self.qscrollContext = QtGui.QWidget()
-        self.qscrollLayout = QtGui.QVBoxLayout(self.qscrollContext)
+    def redraw(self, data, **kwargs):
+        self.qscrollContext = QtWidgets.QWidget()
+        self.qscrollLayout = QtWidgets.QVBoxLayout(self.qscrollContext)
         self.qscrollLayout.setGeometry(QtCore.QRect(0, 0, 1000, 1000))
 
         self.qscroll.setWidget(self.qscrollContext)
@@ -333,12 +333,12 @@ class ActiveFigures(object):
         self._saved_positions[view_type] = (x, y)
 
     def get_position(self, view_type):
-        if view_type in self._saved_positions.keys():
+        if view_type in list(self._saved_positions.keys()):
             return self._saved_positions[view_type]
         return (0, 0)
 
 
-class MainDlg(QtGui.QDialog):
+class MainDlg(QtWidgets.QDialog):
     # order of widgets on dataSourceSw
     DATA_CFG_ORDER = [CSVSourceConfig.TYPE, LinearSourceConfig.TYPE,
             SinSourceConfig.TYPE, RandomSourceConfig.TYPE]
@@ -451,7 +451,7 @@ class MainDlg(QtGui.QDialog):
         if self.conf.sources[idx].TYPE != RandomSourceConfig.TYPE:
             self.log.error("config source not RandomSourceConfig")
             return
-        print 'random cache butt state:', butt_state
+        print('random cache butt state:', butt_state)
         self.conf.sources[idx].use_cached = self.ui.randomCacheChb.isChecked()
         self.log.debug("use_cached changed to {}".format(butt_state))
         self.need_recalc_ssa = True
@@ -563,8 +563,14 @@ class MainDlg(QtGui.QDialog):
         self.conf.common.data_size = val
 
     def read_config(self):
-        fn = QtGui.QFileDialog.getOpenFileName(self, "Open config", "",
+        fn = QtWidgets.QFileDialog.getOpenFileName(self, "Open config", "",
                 "Configs (*.cfg)")
+        # fn is a tuple (selected file name, filter)
+        # filter is Config (*.cfg) by default
+        # fn is empty on Cancel
+        if isinstance(fn, tuple):
+            fn = fn[0]
+        abc = self.ui.configFileLe.text()
         if fn == '' or self.ui.configFileLe.text() == fn:
             return
         self.need_recreate_ssa= True
@@ -595,7 +601,7 @@ class MainDlg(QtGui.QDialog):
             elif src.TYPE == RandomSourceConfig.TYPE:
                 src_name = "randomPage"
             src_name = "{}/{}".format(src.sname, src.TYPE)
-            print "src_name:", src_name
+            print("src_name:", src_name)
             self.ui.sourceTypeCb.addItem(src_name)
         idx = self.conf.source_idx
         if idx == Config.COMBINED_IDX:
@@ -663,8 +669,10 @@ class MainDlg(QtGui.QDialog):
         self.ui.dataSourceSw.setCurrentIndex(dview_idx)
 
     def csv_file_open(self):
-        fn = QtGui.QFileDialog.getOpenFileName(self, "Open config", "",
+        fn = QtWidgets.QFileDialog.getOpenFileName(self, "Open config", "",
                 "CSV (*.csv)")
+        if isinstance(fn, tuple):
+            fn = fn[0]
         if fn == '' or self.ui.csvFileLe.text() == fn:
             return
         self.need_recalc_ssa = True
@@ -682,7 +690,7 @@ class MainDlg(QtGui.QDialog):
     def save_config(self):
         pass
 
-    def _redraw_figure(self, title, fig_type, **line_args):
+    def _redraw_figure(self, title, fig_type, *args, **kw_args):
         ''' replace data on existed figure or create new one '''
         if not self.pssa:
             return
@@ -690,10 +698,10 @@ class MainDlg(QtGui.QDialog):
         if not f:
             x, y = self.active_figures.get_position(fig_type)
             f = self.newFigure(title, fig_type, x, y)
-            f.draw(**line_args)
+            f.draw(*args, **kw_args)
             self.active_figures.add(f)
         else:
-            f.redraw(**line_args)
+            f.redraw(*args, **kw_args)
 
     def w_correl_req(self):
         ''' show w-correlation '''
@@ -727,10 +735,10 @@ class MainDlg(QtGui.QDialog):
         lim = int(self.conf.show.s_show_limit)
         y_raw = self.pssa.s_svd()[:lim]
         y = np.log10(y_raw)
-        line_data = [range(y.size), y]
+        line_data = [list(range(y.size)), y]
         data = {}
         lines = {}
-        data['xdata'] = range(y.size)
+        data['xdata'] = list(range(y.size))
         data['ydata'] = y
         data['marker'] = '*'
         lines['slog'] = data
@@ -878,30 +886,63 @@ class MainDlg(QtGui.QDialog):
         self.pssa.calc_u_fft_correl()
         lim = int(self.conf.show.s_show_limit)
         y = self.pssa.u_correl[:lim]
-        line_data = [range(y.size), y]
+        line_data = [list(range(y.size)), y]
         self._redraw_figure("FFT correl", self.FFT_CORREL_VIEW, line_data, '*')
+
+    def fourie_show_req(self):
+        self.pssa.calc_u_fft_correl()
+        if self.pssa.u_fft_pw is None:
+            self.log.info("fourie_show_req(): data is None")
+            return
+        if not self.pssa:
+            return
+        f = self.active_figures.get(self.FOURIE_VIEW)
+        if f:
+            f.done(0)
+            del(f)
+            f = None
+            self.active_figures.remove(self.FOURIE_VIEW)
+        if not f:
+            x, y = self.active_figures.get_position(self.FOURIE_VIEW)
+            f = self.newListFigure("V eigenvectors", self.FOURIE_VIEW, x, y)
+            self.active_figures.add(f)
+        self._redraw_figure("FFT(U)", self.FOURIE_VIEW, self.pssa.u_fft_pw)
 
     def v_eigenvect_show_req(self):
         data = self.pssa.v_eigen_vectors()
+        if data is None:
+            return
+        f = self.active_figures.get(self.V_VIEW)
+        if f:
+            f.done(0)
+            del(f)
+            f = None
+            self.active_figures.remove(self.V_VIEW)
+        if not f:
+            x, y = self.active_figures.get_position(self.V_VIEW)
+            f = self.newListFigure("V eigenvectors", self.V_VIEW, x, y)
+            self.active_figures.add(f)
         self._redraw_figure("V eigenvectors", self.V_VIEW, data)
 
     def u_eigenvect_show_req(self):
         data = self.pssa.u_eigen_vectors()
         if data is None:
             return
+        f = self.active_figures.get(self.U_VIEW)
+        if f:
+            f.done(0)
+            del(f)
+            f = None
+            self.active_figures.remove(self.U_VIEW)
+        if not f:
+            x, y = self.active_figures.get_position(self.U_VIEW)
+            f = self.newListFigure("V eigenvectors", self.U_VIEW, x, y)
+            self.active_figures.add(f)
         self._redraw_figure("U eigenvectors", self.U_VIEW, data)
-
-    def fourie_show_req(self):
-        if self.pssa.u_fft_pw is None:
-            self.log.info("fourie_show_req(): data is None")
-            return
-        if not self.pssa:
-            return
-        self._redraw_figure("FFT(U)", self.FOURIE_VIEW, self.pssa.u_fft_pw)
 
     def fig_closing(self, view_type, x, y):
         ''' slot about closing figure window '''
-        print "closing %d..." % view_type
+        print("closing %d..." % view_type)
         self.active_figures.remove(view_type)
         self.active_figures.save_position(view_type, x, y)
 
@@ -991,8 +1032,8 @@ class MainDlg(QtGui.QDialog):
                     self._ssa_w_optimized()
                 else:
                     self._ssa()
-            except pssa.PSSAError, e:
-                QtGui.QMessageBox.critical(None, "SSA calc", str(e))
+            except pssa.PSSAError as e:
+                QtWidgets.QMessageBox.critical(None, "SSA calc", str(e))
                 self.enable_all()
                 return
 
@@ -1030,7 +1071,7 @@ class MainDlg(QtGui.QDialog):
         self.coeff_dlg.show()
         self.enable_all()
         # redraw figures
-        for f_type in self.figure_glue.keys():
+        for f_type in list(self.figure_glue.keys()):
             if self.figure_glue[f_type][1]:
                 # always draw
                 self.figure_glue[f_type][0]()
@@ -1042,7 +1083,7 @@ class MainDlg(QtGui.QDialog):
 
     def newFigure(self, title, view_type, x, y, marker=None):
         dlg = XYPlotDlg(self, title, view_type, x, y, marker)
-        print "marker:", marker
+        print("marker:", marker)
         dlg.show()
         return dlg
 
@@ -1092,7 +1133,7 @@ if __name__ == '__main__':
                 format="* [%(levelname)8s] [%(name)10s] %(message)s",
                 datefmt='%H:%M:%S')
     log = logging.getLogger('main')
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dlg = MainDlg(lvl)
     dlg.show()
     sys.exit(app.exec_())

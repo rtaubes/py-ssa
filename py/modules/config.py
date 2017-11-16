@@ -6,7 +6,7 @@
     of the original data
 '''
 import logging
-import ConfigParser
+import configparser
 import re
 
 
@@ -272,14 +272,14 @@ class Config(object):
         self.ssa = None
         self.show = None
         self.log.info("parsing file [%s]" % fname)
-        cnf = ConfigParser.ConfigParser(allow_no_value=True)
+        cnf = configparser.ConfigParser(allow_no_value=True)
 #        cnf = ConfigParser.SafeConfigParser()
         cnf.read([fname])
-        print "fname: ", fname
-        print "sections: ", cnf.sections()
+        print("fname: ", fname)
+        print("sections: ", cnf.sections())
         for s in cnf.sections():
-            print "section ", s
-            if not s in self.sections.keys():
+            print("section ", s)
+            if not s in list(self.sections.keys()):
                 err = 'Unknown section [%s]' % s
                 self.log.error(err)
                 raise ConfigError(err)
@@ -314,7 +314,7 @@ class Config(object):
             err = "Could not save - have no data"
             self.log.error(err)
             raise ConfigError(err)
-        cnf = ConfigParser.ConfigParser()
+        cnf = configparser.ConfigParser()
         self.common.save(cnf)
         for src in self.sources:
             src.save(cnf)

@@ -1,0 +1,9 @@
+### temporary files
+*~
+*.swo
+*.swp
+*.pyc
+__pycache__/
+
+### TODO
+TODO

@@ -12,7 +12,7 @@ import numpy.linalg as ls
 import logging
 import math
 #import config
-from print_support import log_array, log_matrix, matrix_shape_str
+from .print_support import log_array, log_matrix, matrix_shape_str
 
 
 class SSAError(Exception):
@@ -85,7 +85,7 @@ class SSA(object):
         return self.poly_roots
 
     def get_N_data(self):
-        x = range(self.data_offset, self.data_offset + self.N)
+        x = list(range(self.data_offset, self.data_offset + self.N))
         y = self.ydata[self.data_offset:self.data_offset + self.N]
         return [x, y]
 
@@ -93,7 +93,7 @@ class SSA(object):
         upidx = self.ydata.size
         if ulim < self.ydata.size:
             upidx = ulim
-        return [range(offset, upidx), self.ydata[offset:upidx]]
+        return [list(range(offset, upidx)), self.ydata[offset:upidx]]
 
     def assign_groups(self, glist):
         ''' assign combination of eigenvectors(unit matrixes)
@@ -558,7 +558,7 @@ class SSA(object):
         m = np.dot(u, np.dot(np.diagflat(s), v))
         y = self.__diag_average_um(m)
         self.log.debug("calc_rest(), y:{}".format(y))
-        return [np.array(range(y.size)) + self.data_offset , y]
+        return [np.array(list(range(y.size))) + self.data_offset , y]
 
     def calc_F1(self):
         ''' calculate F1 in input range.
@@ -571,5 +571,5 @@ class SSA(object):
         m = np.dot(u, np.dot(np.diagflat(self.s_opt), v))
         y = self.__diag_average_um(m)
         self.log.debug("calcF1(), y:{}".format(y))
-        x = np.array(range(y.size)) + self.data_offset
+        x = np.array(list(range(y.size))) + self.data_offset
         return [x, y]
