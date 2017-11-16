@@ -8,13 +8,14 @@ time series.
 User should select configuration which is a file with a simple structure.
 Data for time series has CSV format with fields
 'date','time','open','high','low','close','vol'.
-The first line of a CSV file should include field names.
+The first line of a CSV file should include the field names.
 
 How to use:
-1) Run ./ssa.py
-2) Select a configuration file
-3) Click the 'Calc' button.
-4) Select required number of SVD eigenvectors and click 'Calc' once more.
+
+- Run ./ssa.py
+- Select a configuration file
+- Click the 'Calc' button.
+- Select required number of SVD eigenvectors and click 'Calc' once more.
 
 The site with a description: [link](rtaubes.pythonanywhere.com)
 
